@@ -624,7 +624,9 @@ class Detect(Function):
         self.top_k = top_k  # nm_supression으로 conf가 높은 top_k개의 계산에 사용하는, top_k = 200
         self.nms_thresh = nms_thresh  # nm_supression으로 IOU가 nms_thresh=0.45보다 크면 동일한 물체의 BBox로 간주
 
+    @staticmethod
     def forward(self, loc_data, conf_data, dbox_list):
+        
         """
         순전파 계산을 수행한다.
 
@@ -703,6 +705,7 @@ class Detect(Function):
                 output[i, cl, :count] = torch.cat((scores[ids[:count]].unsqueeze(1),
                                                    boxes[ids[:count]]), 1)
 
+        self.save_for_backward(output)
         return output  # torch.Size([1, 21, 200, 5])
 
 # SSD 클래스를 작성한다
@@ -790,7 +793,7 @@ class SSD(nn.Module):
         if self.phase == "inference":  # 추론시
             # "Detect" 클래스의 forward를 실행
             # 반환값의 크기는 torch.Size([batch_num, 21, 200, 5])
-            return self.detect(output[0], output[1], output[2])
+            return Detect.apply(output[0], output[1], output[2])
 
         else:  # 학습시
             return output
