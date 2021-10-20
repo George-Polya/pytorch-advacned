@@ -23,6 +23,7 @@ class Compose(object):
         self.transforms = transforms
 
     def __call__(self, meta_data, img, mask_miss):
+        
         for t in self.transforms:
             meta_data, img, mask_miss = t(meta_data, img, mask_miss)
 
@@ -149,11 +150,12 @@ class aug_scale(object):
         scale_abs = self.params_transform['target_dist'] / \
             meta_data['scale_provided']
         scale = scale_abs * scale_multiplier
+        
         img = cv2.resize(img, (0, 0), fx=scale, fy=scale,
-                         interpolation=cv2.INTER_CUBIC)
+                        interpolation=cv2.INTER_CUBIC)
 
         mask_miss = cv2.resize(mask_miss, (0, 0), fx=scale,
-                               fy=scale, interpolation=cv2.INTER_CUBIC)
+                            fy=scale, interpolation=cv2.INTER_CUBIC)
 
         # modify meta data
         meta_data['objpos'] *= scale
