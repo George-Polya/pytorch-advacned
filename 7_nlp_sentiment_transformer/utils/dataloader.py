@@ -97,12 +97,12 @@ def get_IMDb_DataLoaders_and_TEXT(max_length=256, batch_size=24):
 
     # 데이터를 읽었을 때, 내용에 대해 수행할 처리를 정의합니다
     # max_length
-    TEXT = torchtext.data.Field(sequential=True, tokenize=tokenizer_with_preprocessing, use_vocab=True,
+    TEXT = torchtext.legacy.data.Field(sequential=True, tokenize=tokenizer_with_preprocessing, use_vocab=True,
                                 lower=True, include_lengths=True, batch_first=True, fix_length=max_length, init_token="<cls>", eos_token="<eos>")
-    LABEL = torchtext.data.Field(sequential=False, use_vocab=False)
+    LABEL = torchtext.legacy.data.Field(sequential=False, use_vocab=False)
 
     # "data" 폴더에서 각 tsv 파일을 읽습니다
-    train_val_ds, test_ds = torchtext.data.TabularDataset.splits(
+    train_val_ds, test_ds = torchtext.legacy.data.TabularDataset.splits(
         path='./data/', train='IMDb_train.tsv',
         test='IMDb_test.tsv', format='tsv',
         fields=[('Text', TEXT), ('Label', LABEL)])
@@ -118,13 +118,13 @@ def get_IMDb_DataLoaders_and_TEXT(max_length=256, batch_size=24):
     TEXT.build_vocab(train_ds, vectors=english_fasttext_vectors, min_freq=10)
 
     # DataLoader를 작성합니다(torchtext에서는 단순히 iterater로 불립니다)
-    train_dl = torchtext.data.Iterator(
+    train_dl = torchtext.legacy.data.Iterator(
         train_ds, batch_size=batch_size, train=True)
 
-    val_dl = torchtext.data.Iterator(
+    val_dl = torchtext.legacy.data.Iterator(
         val_ds, batch_size=batch_size, train=False, sort=False)
 
-    test_dl = torchtext.data.Iterator(
+    test_dl = torchtext.legacy.data.Iterator(
         test_ds, batch_size=batch_size, train=False, sort=False)
 
     return train_dl, val_dl, test_dl, TEXT
